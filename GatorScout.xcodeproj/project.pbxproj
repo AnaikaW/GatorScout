@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8AFE2B3A2CE95B72003A09DF /* gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 8AFE2B392CE95B72003A09DF /* gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8AFE2B1D2CE95A26003A09DF /* GatorScout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GatorScout.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8AFE2B392CE95B72003A09DF /* gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		8AFE2B142CE95A26003A09DF = {
 			isa = PBXGroup;
 			children = (
+				8AFE2B392CE95B72003A09DF /* gitignore */,
 				8AFE2B1F2CE95A26003A09DF /* GatorScout */,
 				8AFE2B1E2CE95A26003A09DF /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AFE2B3A2CE95B72003A09DF /* gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
