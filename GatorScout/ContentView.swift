@@ -188,8 +188,8 @@ struct ScoutingFormView: View {
             "Defense": isDefense ? "Yes" : "No"
         ]
 
-        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbz0LdNSmki3z9tRTv3qoQ7J2ZVQk2RoMX1g3xc4AWxk_Lp_17LIRcR3u7Ns8cALYtA9ag/exec")!
-
+        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbx5UIy5lN2HQRmg5axLzSBtmud5obGHyXpqv4lYW79qVNPSZ76m5bXsZBV5dCUFw8hBnA/exec")!
+        
         var request = URLRequest(url: endpointURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
