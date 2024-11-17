@@ -1,7 +1,6 @@
 import SwiftUI
 import Foundation
 
-// Hex color extension
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -28,7 +27,6 @@ extension Color {
     }
 }
 
-// Color themes
 extension Color {
     static let greenTheme1 = Color(hex: "#9beba4")
     static let greenTheme2 = Color(hex: "#32a840")
@@ -40,15 +38,13 @@ extension Color {
 struct iOSCheckboxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button(action: {
-            // Toggle the state when the button is pressed
             configuration.isOn.toggle()
         }, label: {
             HStack {
-                // Display a checkmark if the toggle is on, else an empty square
                 Image(systemName: configuration.isOn ? "checkmark.square" : "square")
-                    .foregroundColor(.darkGreenFont) // Customize the color of the checkbox icon
+                    .foregroundColor(.darkGreenFont)
                 configuration.label
-                    .foregroundColor(.darkGreenFont) // Customize the label text color
+                    .foregroundColor(.darkGreenFont)
             }
         })
     }
@@ -59,17 +55,14 @@ struct ScoutingFormView: View {
     @State private var matchNumber = ""
     @State private var isSubmitting = false
     
-    // New variables for additional performance data
     @State private var autoPoints = ""
     @State private var teleopPoints = ""
     @State private var endGamePoints = ""
     @State private var comments = ""
     
-    // Variables for offense and defense toggles
     @State private var isOffense = false
     @State private var isDefense = false
     
-    // Alert variables
     @State private var showErrorAlert = false
     @State private var showSuccessAlert = false
     @State private var alertMessage = ""
@@ -77,7 +70,7 @@ struct ScoutingFormView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.greenTheme1.edgesIgnoringSafeArea(.all) // Main green background
+                Color.greenTheme1.edgesIgnoringSafeArea(.all)
                 VStack {
                     Form {
                         Section(header: Text("Match Information").foregroundColor(.darkGreencolor)) {
@@ -156,17 +149,15 @@ struct ScoutingFormView: View {
             .accentColor(Color.greenTheme2)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Image("title") // Replace with the name of your image asset
+                    Image("title")
                         .resizable()
                         .scaledToFit()
-                        .frame(height: 40) // Adjust height as needed
+                        .frame(height: 40)
                 }
             }
-            // Error Alert
             .alert(isPresented: $showErrorAlert) {
                 Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
-            // Success Alert
             .alert(isPresented: $showSuccessAlert) {
                 Alert(
                     title: Text("Success"),
