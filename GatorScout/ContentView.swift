@@ -50,8 +50,6 @@ struct iOSCheckboxToggleStyle: ToggleStyle {
     }
 }
 
-import SwiftUI
-
 struct ScoutingFormView: View {
     let username: String // Username passed from LoginView
 
@@ -59,9 +57,9 @@ struct ScoutingFormView: View {
     @State private var matchNumber = ""
     @State private var isSubmitting = false
     
-    @State private var autoPoints = ""
-    @State private var teleopPoints = ""
-    @State private var endGamePoints = ""
+    @State private var autoPoints = 0
+    @State private var teleopPoints = 0
+    @State private var endGamePoints = 0
     @State private var comments = ""
     
     @State private var isOffense = false
@@ -103,14 +101,12 @@ struct ScoutingFormView: View {
                         
                         Section(header: Text("Alliance").foregroundColor(.darkGreencolor)) {
                             VStack {
-                                // Instructions for the user
                                 Text("Press on the screen to mark the starting point of the robot.")
                                     .font(.subheadline)
                                     .foregroundColor(.darkGreenFont)
                                     .multilineTextAlignment(.center)
                                     .padding(.bottom, 5)
                                 
-                                // Picker for Alliance Selection
                                 Picker("Select Alliance", selection: $alliance) {
                                     Text("Red").tag("Red")
                                     Text("Blue").tag("Blue")
@@ -118,16 +114,14 @@ struct ScoutingFormView: View {
                                 .pickerStyle(SegmentedPickerStyle())
                                 .padding()
                                 
-                                // Image with gesture to drop a pin
                                 GeometryReader { geometry in
                                     ZStack {
                                         if alliance == "Red" {
-                                            Image("red_alliance") // Replace with Red Alliance image name
+                                            Image("red_alliance")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(height: 300)
                                                 .overlay(
-                                                    // Draw a pin if location is set
                                                     pinLocation.map { location in
                                                         Circle()
                                                             .fill(Color.red)
@@ -136,7 +130,6 @@ struct ScoutingFormView: View {
                                                     }
                                                 )
                                                 .gesture(
-                                                    // Capture tap location
                                                     DragGesture(minimumDistance: 0)
                                                         .onEnded { value in
                                                             let location = value.location
@@ -148,12 +141,11 @@ struct ScoutingFormView: View {
                                                         }
                                                 )
                                         } else {
-                                            Image("blue_alliance") // Replace with Blue Alliance image name
+                                            Image("blue_alliance")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(height: 300)
                                                 .overlay(
-                                                    // Draw a pin if location is set
                                                     pinLocation.map { location in
                                                         Circle()
                                                             .fill(Color.blue)
@@ -162,7 +154,6 @@ struct ScoutingFormView: View {
                                                     }
                                                 )
                                                 .gesture(
-                                                    // Capture tap location
                                                     DragGesture(minimumDistance: 0)
                                                         .onEnded { value in
                                                             let location = value.location
@@ -182,26 +173,61 @@ struct ScoutingFormView: View {
                         }
                         
                         Section(header: Text("Performance").foregroundColor(.darkGreencolor)) {
-                            TextField("Auto Points", text: $autoPoints)
-                                .keyboardType(.numberPad)
+                            VStack(alignment: .leading) {
+                                Text("Auto Points")
+                                    .font(.headline) // Adjust font as needed
+                                    .foregroundColor(.darkGreenFont) // Same color as your picker for consistency
+                                    .padding(.bottom, 4) // Adds spacing between title and picker
+                                
+                                Picker("Auto Points", selection: $autoPoints) {
+                                    ForEach(0..<101) { number in // Adjust the range as needed
+                                        Text("\(number)").tag(number)
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle()) // Use a wheel picker for scrolling
+                                .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.white.opacity(0.8))
                                 .cornerRadius(8)
                                 .foregroundColor(.darkGreenFont)
-                            
-                            TextField("Teleop Points", text: $teleopPoints)
-                                .keyboardType(.numberPad)
+                            }
+                            VStack(alignment: .leading) {
+                                Text("Teleop Points")
+                                    .font(.headline) // Adjust font as needed
+                                    .foregroundColor(.darkGreenFont) // Same color as your picker for consistency
+                                    .padding(.bottom, 4) // Adds spacing between title and picker
+                                
+                                Picker("Teleop Points", selection: $teleopPoints) {
+                                    ForEach(0..<101) { number in // Adjust the range as needed
+                                        Text("\(number)").tag(number)
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle()) // Use a wheel picker for scrolling
+                                .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.white.opacity(0.8))
                                 .cornerRadius(8)
                                 .foregroundColor(.darkGreenFont)
-                            
-                            TextField("End Game Points", text: $endGamePoints)
-                                .keyboardType(.numberPad)
-                                .padding()
-                                .background(Color.white.opacity(0.8))
-                                .cornerRadius(8)
-                                .foregroundColor(.darkGreenFont)
+                            }
+
+                                VStack(alignment: .leading) {
+                                    Text("End Game Points")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.bottom, 4)
+
+                                    Picker("End Game Points", selection: $endGamePoints) {
+                                        ForEach(0..<101) { number in // Adjust the range as needed
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
                             
                             TextField("Comments", text: $comments)
                                 .padding()
@@ -270,7 +296,6 @@ struct ScoutingFormView: View {
         
         isSubmitting = true
 
-        // Normalize pin location to percentage of the image size
         let normalizedPinLocation: [String: CGFloat]? = pinLocation.map {
             ["x": $0.x / imageSize.width, "y": $0.y / imageSize.height]
         }
@@ -293,8 +318,7 @@ struct ScoutingFormView: View {
             formData["Pin Location"] = pinData
         }
         
-        // Submit formData to your backend
-        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbwAcrK6Ld2DyoKI61d8SCSCkdirPCqZz3I-BNiWDxUfkdJtM60nw-HMkZ0Y71CR6rs/exec")! // Replace with your endpoint
+        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbwAcrK6Ld2DyoKI61d8SCSCkdirPCqZz3I-BNiWDxUfkdJtM60nw-HMkZ0Y71CR6rs/exec")!
         var request = URLRequest(url: endpointURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -335,15 +359,14 @@ struct ScoutingFormView: View {
     func clearFields() {
         teamNumber = ""
         matchNumber = ""
-        autoPoints = ""
-        teleopPoints = ""
-        endGamePoints = ""
+        autoPoints = 0
+        teleopPoints = 0
+        endGamePoints = 0
         comments = ""
         isOffense = false
         isDefense = false
         drivingScore = 0.0
-        alliance = "Red" // Reset to default
-        pinLocation = nil // Clear pin
+        alliance = "Red"
+        pinLocation = nil
     }
 }
-
