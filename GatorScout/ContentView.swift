@@ -358,8 +358,8 @@ struct ScoutingFormView: View {
         if let pinLocation = pinLocation {
             let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2
             let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2
-            let fieldX = normalizedX * 9.17 / 2
-            let fieldY = normalizedY * 4.66 / 2
+            let fieldX = normalizedX * 917 / 2
+            let fieldY = normalizedY * 466 / 2
             formData["Field Coordinates"] = ["x": fieldX, "y": fieldY]
         }
 
