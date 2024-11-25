@@ -6,13 +6,18 @@ struct LoginView: View {
     @State private var showErrorAlert = false
     @State private var alertMessage = ""
     @State private var isLoggedIn = false
-    
+    @State private var isPhoneMode = true // Default to phone mode
+
     let correctPassword = "gogators"
     
     var body: some View {
         Group {
             if isLoggedIn {
-                ScoutingFormView(username: username) // Pass the username here
+                if isPhoneMode {
+                    ScoutingFormView(username: username) // Phone view
+                } else {
+                    iPadScoutingFormView(username: username) // iPad-specific view
+                }
             } else {
                 ZStack {
                     Color.greenTheme1.edgesIgnoringSafeArea(.all)
@@ -34,6 +39,10 @@ struct LoginView: View {
                             .padding()
                             .background(Color.white.opacity(0.8))
                             .cornerRadius(8)
+                            .foregroundColor(.darkGreenFont)
+                        
+                        Toggle("Use Phone Mode", isOn: $isPhoneMode)
+                            .padding()
                             .foregroundColor(.darkGreenFont)
                         
                         Button(action: validateLogin) {
@@ -70,4 +79,3 @@ struct LoginView: View {
         }
     }
 }
-
