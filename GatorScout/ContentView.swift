@@ -1,7 +1,13 @@
 import SwiftUI
 import Foundation
 
-// Color and helper extensions
+extension UIApplication {
+    /// Dismisses the keyboard by resigning the first responder.
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -66,8 +72,13 @@ struct ScoutingFormView: View {
 
     var body: some View {
         NavigationView {
+            
             ZStack {
                 Color.greenTheme1.edgesIgnoringSafeArea(.all)
+                    .edgesIgnoringSafeArea(.all)
+                                    .onTapGesture {
+                                        UIApplication.shared.endEditing()
+                                    }
                 VStack {
                     Form {
                         Section(header: Text("Match Information").foregroundColor(.darkGreenFont)) {
@@ -301,12 +312,24 @@ struct ScoutingFormView: View {
     }
 
     func submitData() {
-        guard !teamNumber.isEmpty, !matchNumber.isEmpty else {
-            alertMessage = "All fields must be filled."
+        guard !teamNumber.isEmpty else {
+            alertMessage = "Team Number is required."
             showErrorAlert = true
             return
         }
-
+        
+        guard !matchNumber.isEmpty else {
+            alertMessage = "Match Number is required."
+            showErrorAlert = true
+            return
+        }
+    
+        guard drivingScore > 0 else {
+            alertMessage = "Driving Score must be selected."
+            showErrorAlert = true
+            return
+        }
+        
         isSubmitting = true
 
         let normalizedPinLocation: [String: CGFloat]? = pinLocation.map {
@@ -317,35 +340,34 @@ struct ScoutingFormView: View {
             "Username": username,
             "Team Number": teamNumber,
             "Match Number": matchNumber,
-            "Alliance": allianceColor, // Log alliance color
+            "Alliance": allianceColor,
             "Auto Points": autoPoints,
             "Teleop Points": teleopPoints,
             "End Game Points": endGamePoints,
-            "Comments": comments,
             "Offense": isOffense ? "Yes" : "No",
             "Defense": isDefense ? "Yes" : "No",
             "Driving Score": Int(drivingScore)
         ]
+        
+        // Add optional comments only if provided
+        if !comments.isEmpty {
+            formData["Comments"] = comments
+        }
 
-        // Update pin location to use the provided coordinate system
+        // Update pin location if available
         if let pinLocation = pinLocation {
-            let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2 // Normalize and adjust to range [-1, 1]
-            let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2 // Flip Y-axis, normalize, adjust to [-1, 1]
-            
-            // Scale to your field coordinates (-X, +X, -Y, +Y)
-            let fieldX = normalizedX * 9.17 / 2 // fieldWidth is the width of your coordinate system
-            let fieldY = normalizedY * 4.66 / 2 // fieldHeight is the height of your coordinate system
-            
-            // Add field coordinates to form data
+            let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2
+            let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2
+            let fieldX = normalizedX * 9.17 / 2
+            let fieldY = normalizedY * 4.66 / 2
             formData["Field Coordinates"] = ["x": fieldX, "y": fieldY]
         }
 
-        
         let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbztu6xHmQ1hhbqcQjCCVCL2zrS9Sc-tYPH17alxR8uw7Zbm_kEvxwGpMqgExJxRIm9pZg/exec")!
         var request = URLRequest(url: endpointURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: formData, options: [])
             request.httpBody = jsonData
@@ -355,30 +377,30 @@ struct ScoutingFormView: View {
             isSubmitting = false
             return
         }
-        
+
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 isSubmitting = false
-                
+
                 if let error = error {
                     alertMessage = "Error: \(error.localizedDescription)"
                     showErrorAlert = true
                     return
                 }
-                
+
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                     alertMessage = "Failed to submit data."
                     showErrorAlert = true
                     return
                 }
-                
+
                 alertMessage = "Data submitted successfully!"
                 showSuccessAlert = true
             }
         }
         task.resume()
     }
-    
+
     func clearFields() {
         teamNumber = ""
         matchNumber = ""
