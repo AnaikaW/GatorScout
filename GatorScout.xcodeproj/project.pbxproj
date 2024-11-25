@@ -15,9 +15,22 @@
 		8AFE2B392CE95B72003A09DF /* gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8AA167D92CF16F85003151A0 /* Exceptions for "GatorScout" folder in "GatorScout" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8AFE2B1C2CE95A26003A09DF /* GatorScout */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8AFE2B1F2CE95A26003A09DF /* GatorScout */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8AA167D92CF16F85003151A0 /* Exceptions for "GatorScout" folder in "GatorScout" target */,
+			);
 			path = GatorScout;
 			sourceTree = "<group>";
 		};
@@ -259,9 +272,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GatorScout/Preview Content\"";
-				DEVELOPMENT_TEAM = 2NQ38WRV6N;
+				DEVELOPMENT_TEAM = 32AD75A8VS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GatorScout/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -272,7 +286,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Walia.GatorScout;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Walia.GatorScout17;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -288,9 +302,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GatorScout/Preview Content\"";
-				DEVELOPMENT_TEAM = 2NQ38WRV6N;
+				DEVELOPMENT_TEAM = 32AD75A8VS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GatorScout/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -301,7 +316,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Walia.GatorScout;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Walia.GatorScout17;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

@@ -86,16 +86,16 @@ struct ScoutingFormView: View {
                                 .foregroundColor(.darkGreenFont)
                         }
 
-                        Section(header: Text("Alliance Color").foregroundColor(.darkGreenFont)) {
+                        Section(header: Text("Alliance Color and Scouting").foregroundColor(.darkGreenFont)) {
+                            // Alliance Color Picker
                             Picker("Alliance", selection: $allianceColor) {
                                 Text("Red").tag("Red")
                                 Text("Blue").tag("Blue")
                             }
                             .pickerStyle(SegmentedPickerStyle())
-                            .padding()
-                        }
-
-                        Section(header: Text("Alliance Map").foregroundColor(.darkGreenFont)) {
+                            .padding(.vertical, 8)
+                            
+                            // Alliance Map
                             VStack {
                                 Text("Tap to mark the robot's starting position.")
                                     .font(.subheadline)
@@ -105,17 +105,25 @@ struct ScoutingFormView: View {
 
                                 GeometryReader { geometry in
                                     ZStack {
+                                        // Adjust the visible portion and enlarge based on alliance color
                                         Image("1700") // Background map image
                                             .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 300)
+                                            .scaledToFill()
+                                            .frame(width: geometry.size.width, height: geometry.size.height)
+                                            .clipped()
                                             .overlay(
-                                                pinLocation.map { location in
-                                                    Circle()
-                                                        .fill(Color.greenTheme2)
-                                                        .frame(width: 20, height: 20)
-                                                        .position(location)
-                                                }
+                                                // Clip to only show the half and scale it to the full visible area
+                                                allianceColor == "Red"
+                                                    ? Image("1700")
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: geometry.size.width * 2, height: geometry.size.height)
+                                                        .offset(x: geometry.size.width / 2, y: 0) // Show left half scaled up
+                                                    : Image("1700")
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: geometry.size.width * 2, height: geometry.size.height)
+                                                        .offset(x: -geometry.size.width / 2, y: 0) // Show right half scaled up
                                             )
                                             .gesture(
                                                 DragGesture(minimumDistance: 0)
@@ -128,77 +136,99 @@ struct ScoutingFormView: View {
                                                         }
                                                     }
                                             )
+                                            .overlay(
+                                                // Add a pin to mark the location if selected
+                                                pinLocation.map { location in
+                                                    Circle()
+                                                        .fill(Color.greenTheme2)
+                                                        .frame(width: 20, height: 20)
+                                                        .position(location)
+                                                }
+                                            )
                                     }
                                 }
                                 .frame(height: 300)
                             }
                             .padding()
+
                         }
 
-                        Section(header: Text("Performance").foregroundColor(.darkGreenFont)) {
-                            VStack(alignment: .leading) {
-                                Text("Auto Points")
-                                    .font(.headline) // Adjust font as needed
-                                    .foregroundColor(.darkGreenFont) // Same color as your picker for consistency
-                                    .padding(.bottom, 4) // Adds spacing between title and picker
-                                
-                                Picker("Auto Points", selection: $autoPoints) {
-                                    ForEach(0..<31) { number in // Adjust the range as needed
-                                        Text("\(number)").tag(number)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle()) // Use a wheel picker for scrolling
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.white.opacity(0.8))
-                                .cornerRadius(8)
-                                .foregroundColor(.darkGreenFont)
-                            }
 
-                            VStack(alignment: .leading, spacing: 16) { // Adjust spacing as needed
-                                // Teleop Points Picker
-                                VStack(alignment: .leading) {
-                                    Text("Teleop Points")
+                        Section(header: Text("Performance").foregroundColor(.darkGreenFont)) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Auto Points:")
                                         .font(.headline)
                                         .foregroundColor(.darkGreenFont)
-                                        .padding(.bottom, 4)
-                                    
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Auto Points", selection: $autoPoints) {
+                                        ForEach(0..<31) { number in // Adjust the range as needed
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle()) // Use a dropdown-style picker for a compact look
+                                    .frame(width: 100, height: 120)
+                                    .clipped() // Limit the width of the picker
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4) // Add vertical padding for spacing
+                            }
+
+
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Teleop Points:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
                                     Picker("Teleop Points", selection: $teleopPoints) {
                                         ForEach(0..<31) { number in // Adjust the range as needed
                                             Text("\(number)").tag(number)
                                         }
                                     }
-                                    .pickerStyle(WheelPickerStyle())
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
+                                    .pickerStyle(WheelPickerStyle()) // Use a dropdown-style picker for a compact look
+                                    .frame(width: 100, height: 120)
+                                    .clipped() // Limit the width of the picker
                                     .background(Color.white.opacity(0.8))
                                     .cornerRadius(8)
                                     .foregroundColor(.darkGreenFont)
                                 }
+                                .padding(.vertical, 4) // Add vertical padding for spacing
+                            }
                                 
                                 // End Game Points Picker
-                                VStack(alignment: .leading) {
-                                    Text("End Game Points")
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("End Game Points:")
                                         .font(.headline)
                                         .foregroundColor(.darkGreenFont)
-                                        .padding(.bottom, 4)
-                                    
+                                        .padding(.trailing, 8)
+                                    Spacer()
                                     Picker("End Game Points", selection: $endGamePoints) {
-                                        ForEach(0..<11) { number in // Adjust the range as needed
+                                        ForEach(0..<31) { number in // Adjust the range as needed
                                             Text("\(number)").tag(number)
                                         }
                                     }
-                                    .pickerStyle(WheelPickerStyle())
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
+                                    .pickerStyle(WheelPickerStyle()) // Use a dropdown-style picker for a compact look
+                                    .frame(width: 100, height: 120)
+                                    .clipped() // Limit the width of the picker
                                     .background(Color.white.opacity(0.8))
                                     .cornerRadius(8)
                                     .foregroundColor(.darkGreenFont)
                                 }
+                                .padding(.vertical, 4) // Add vertical padding for spacing
                             }
 
                             Toggle("Offense", isOn: $isOffense)
+                                .foregroundColor(.darkGreenFont)
+                                .font(.headline)
                             Toggle("Defense", isOn: $isDefense)
+                                .foregroundColor(.darkGreenFont)
+                                .font(.headline)
 
                             VStack(alignment: .leading) {
                                 Text("Driving Score: \(Int(drivingScore))")
@@ -297,11 +327,21 @@ struct ScoutingFormView: View {
             "Driving Score": Int(drivingScore)
         ]
 
-        if let pinData = normalizedPinLocation {
-            formData["Pin Location"] = pinData
+        // Update pin location to use the provided coordinate system
+        if let pinLocation = pinLocation {
+            let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2 // Normalize and adjust to range [-1, 1]
+            let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2 // Flip Y-axis, normalize, adjust to [-1, 1]
+            
+            // Scale to your field coordinates (-X, +X, -Y, +Y)
+            let fieldX = normalizedX * 9.17 / 2 // fieldWidth is the width of your coordinate system
+            let fieldY = normalizedY * 4.66 / 2 // fieldHeight is the height of your coordinate system
+            
+            // Add field coordinates to form data
+            formData["Field Coordinates"] = ["x": fieldX, "y": fieldY]
         }
+
         
-        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbx5RRLJUkuxSnlfXQnmtI8O2J78M_mJE4VrU66z_ufw8GhrIYEJICYjZ67iunJQxU-olQ/exec")!
+        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbztu6xHmQ1hhbqcQjCCVCL2zrS9Sc-tYPH17alxR8uw7Zbm_kEvxwGpMqgExJxRIm9pZg/exec")!
         var request = URLRequest(url: endpointURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

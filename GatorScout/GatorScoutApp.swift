@@ -4,8 +4,9 @@ import SwiftUI
 struct GatorScoutApp: App {
     var body: some Scene {
         WindowGroup {
-            LoginView()
-            .preferredColorScheme(.light)  
+            ScoutingFormView(username: "TestUser") //for testing
+            //LoginView()
+            .preferredColorScheme(.light)
         }
     }
 }
