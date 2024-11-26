@@ -2,7 +2,6 @@ import SwiftUI
 import Foundation
 
 extension UIApplication {
-    /// Dismisses the keyboard by resigning the first responder.
     func endEditing() {
         sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
@@ -34,14 +33,12 @@ extension Color {
     }
 }
 
-// Custom Colors
 extension Color {
     static let greenTheme1 = Color(hex: "#9beba4")
     static let greenTheme2 = Color(hex: "#32a840")
     static let darkGreenFont = Color(hex: "#006400")
 }
 
-// View structure
 struct ScoutingFormView: View {
     let username: String
 
@@ -60,11 +57,11 @@ struct ScoutingFormView: View {
     @State private var drivingScore: Double = 0.0
 
     // Alliance selection
-    @State private var allianceColor = "Red" // Default to Red Alliance
+    @State private var allianceColor = "Red"
 
     // State for pin location
     @State private var pinLocation: CGPoint? = nil
-    @State private var imageSize: CGSize = .zero // Store image size for normalization
+    @State private var imageSize: CGSize = .zero
 
     @State private var showErrorAlert = false
     @State private var showSuccessAlert = false
@@ -98,7 +95,6 @@ struct ScoutingFormView: View {
                         }
 
                         Section(header: Text("Alliance Color and Scouting").foregroundColor(.darkGreenFont)) {
-                            // Alliance Color Picker
                             Picker("Alliance", selection: $allianceColor) {
                                 Text("Red").tag("Red")
                                 Text("Blue").tag("Blue")
@@ -106,7 +102,6 @@ struct ScoutingFormView: View {
                             .pickerStyle(SegmentedPickerStyle())
                             .padding(.vertical, 8)
                             
-                            // Alliance Map
                             VStack {
                                 Text("Tap to mark the robot's starting position.")
                                     .font(.subheadline)
@@ -116,25 +111,23 @@ struct ScoutingFormView: View {
 
                                 GeometryReader { geometry in
                                     ZStack {
-                                        // Adjust the visible portion and enlarge based on alliance color
-                                        Image("1700") // Background map image
+                                        Image("1700")
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: geometry.size.width, height: geometry.size.height)
                                             .clipped()
                                             .overlay(
-                                                // Clip to only show the half and scale it to the full visible area
                                                 allianceColor == "Red"
                                                     ? Image("1700")
                                                         .resizable()
                                                         .scaledToFill()
                                                         .frame(width: geometry.size.width * 2, height: geometry.size.height)
-                                                        .offset(x: geometry.size.width / 2, y: 0) // Show left half scaled up
+                                                        .offset(x: geometry.size.width / 2, y: 0)
                                                     : Image("1700")
                                                         .resizable()
                                                         .scaledToFill()
                                                         .frame(width: geometry.size.width * 2, height: geometry.size.height)
-                                                        .offset(x: -geometry.size.width / 2, y: 0) // Show right half scaled up
+                                                        .offset(x: -geometry.size.width / 2, y: 0)
                                             )
                                             .gesture(
                                                 DragGesture(minimumDistance: 0)
@@ -148,7 +141,6 @@ struct ScoutingFormView: View {
                                                     }
                                             )
                                             .overlay(
-                                                // Add a pin to mark the location if selected
                                                 pinLocation.map { location in
                                                     Circle()
                                                         .fill(Color.greenTheme2)
@@ -174,18 +166,18 @@ struct ScoutingFormView: View {
                                         .padding(.trailing, 8)
                                     Spacer()
                                     Picker("Auto Points", selection: $autoPoints) {
-                                        ForEach(0..<31) { number in // Adjust the range as needed
+                                        ForEach(0..<31) { number in
                                             Text("\(number)").tag(number)
                                         }
                                     }
-                                    .pickerStyle(WheelPickerStyle()) // Use a dropdown-style picker for a compact look
+                                    .pickerStyle(WheelPickerStyle())
                                     .frame(width: 100, height: 120)
-                                    .clipped() // Limit the width of the picker
+                                    .clipped()
                                     .background(Color.white.opacity(0.8))
                                     .cornerRadius(8)
                                     .foregroundColor(.darkGreenFont)
                                 }
-                                .padding(.vertical, 4) // Add vertical padding for spacing
+                                .padding(.vertical, 4)
                             }
 
 
@@ -197,21 +189,21 @@ struct ScoutingFormView: View {
                                         .padding(.trailing, 8)
                                     Spacer()
                                     Picker("Teleop Points", selection: $teleopPoints) {
-                                        ForEach(0..<31) { number in // Adjust the range as needed
+                                        ForEach(0..<31) { number in
                                             Text("\(number)").tag(number)
                                         }
                                     }
-                                    .pickerStyle(WheelPickerStyle()) // Use a dropdown-style picker for a compact look
+                                    .pickerStyle(WheelPickerStyle())
                                     .frame(width: 100, height: 120)
-                                    .clipped() // Limit the width of the picker
+                                    .clipped()
                                     .background(Color.white.opacity(0.8))
                                     .cornerRadius(8)
                                     .foregroundColor(.darkGreenFont)
                                 }
-                                .padding(.vertical, 4) // Add vertical padding for spacing
+                                .padding(.vertical, 4)
                             }
                                 
-                                // End Game Points Picker
+                               
                             VStack(alignment: .leading, spacing: 16) {
                                 HStack {
                                     Text("End Game Points:")
@@ -220,18 +212,18 @@ struct ScoutingFormView: View {
                                         .padding(.trailing, 8)
                                     Spacer()
                                     Picker("End Game Points", selection: $endGamePoints) {
-                                        ForEach(0..<31) { number in // Adjust the range as needed
+                                        ForEach(0..<31) { number in
                                             Text("\(number)").tag(number)
                                         }
                                     }
-                                    .pickerStyle(WheelPickerStyle()) // Use a dropdown-style picker for a compact look
+                                    .pickerStyle(WheelPickerStyle())
                                     .frame(width: 100, height: 120)
-                                    .clipped() // Limit the width of the picker
+                                    .clipped()
                                     .background(Color.white.opacity(0.8))
                                     .cornerRadius(8)
                                     .foregroundColor(.darkGreenFont)
                                 }
-                                .padding(.vertical, 4) // Add vertical padding for spacing
+                                .padding(.vertical, 4)
                             }
 
                             Toggle("Offense", isOn: $isOffense)
@@ -251,7 +243,6 @@ struct ScoutingFormView: View {
                                     .accentColor(.greenTheme2)
                                     .padding(.bottom, 4)
 
-                                // Dynamic description for the driving score
                                 Text(descriptionForScore(Int(drivingScore)))
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
@@ -268,10 +259,10 @@ struct ScoutingFormView: View {
                                     .background(Color.white.opacity(0.8))
                                     .cornerRadius(8)
                                     .foregroundColor(.darkGreenFont)
-                                    .frame(height: 150) // Set a height for the TextEditor
+                                    .frame(height: 150)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.darkGreenFont, lineWidth: 1) // Optional border for better visibility
+                                            .stroke(Color.darkGreenFont, lineWidth: 1)
                                     )
                             }
                             .padding(.vertical)
@@ -349,12 +340,10 @@ struct ScoutingFormView: View {
             "Driving Score": Int(drivingScore)
         ]
         
-        // Add optional comments only if provided
         if !comments.isEmpty {
             formData["Comments"] = comments
         }
 
-        // Update pin location if available
         if let pinLocation = pinLocation {
             let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2
             let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2

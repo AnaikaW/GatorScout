@@ -6,7 +6,7 @@ struct LoginView: View {
     @State private var showErrorAlert = false
     @State private var alertMessage = ""
     @State private var isLoggedIn = false
-    @State private var isPhoneMode = true // Default to phone mode
+    @State private var isPhoneMode = true
 
     let correctPassword = "gogators"
     
@@ -14,9 +14,9 @@ struct LoginView: View {
         Group {
             if isLoggedIn {
                 if isPhoneMode {
-                    ScoutingFormView(username: username) // Phone view
+                    ScoutingFormView(username: username)
                 } else {
-                    iPadScoutingFormView(username: username) // iPad-specific view
+                    iPadScoutingFormView(username: username)
                 }
             } else {
                 ZStack {

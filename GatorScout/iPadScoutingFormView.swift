@@ -48,7 +48,7 @@ struct iPadScoutingFormView: View {
                 )
             }
         }
-        .navigationViewStyle(StackNavigationViewStyle()) // Ensures full-screen view
+        .navigationViewStyle(StackNavigationViewStyle()) 
         .background(Color.greenTheme1.edgesIgnoringSafeArea(.all))
     }
 
@@ -81,12 +81,12 @@ struct iPadScoutingFormView: View {
 
             GeometryReader { geometry in
                 ZStack {
-                    Image("1700") // Replace with your image name
+                    Image("1700")
                         .resizable()
-                        .aspectRatio(contentMode: .fill) // Ensures the image scales proportionally
-                        .frame(width: geometry.size.width * 2, height: 800) // Set full image size, twice the width
-                        .offset(x: allianceColor == "Red" ? 0 : -geometry.size.width) // Show left or right half
-                        .clipped() // Clip the visible portion to fit the container
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width * 2, height: 800)
+                        .offset(x: allianceColor == "Red" ? 0 : -geometry.size.width)
+                        .clipped()
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onEnded { value in
@@ -108,7 +108,7 @@ struct iPadScoutingFormView: View {
                         )
                 }
             }
-            .frame(height: 800) // Set the section height to 800
+            .frame(height: 800)
         }
     }
 
@@ -149,14 +149,12 @@ struct iPadScoutingFormView: View {
                         Slider(value: $drivingScore, in: 1...10, step: 1)
                             .accentColor(.greenTheme2)
 
-                        // Description for driving score
                         Text(descriptionForScore(Int(drivingScore)))
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
                     .padding(.top, 10)
 
-                    // Offense and Defense Toggles
                     VStack(alignment: .leading) {
                         Toggle("Offense", isOn: $isOffense)
                             .foregroundColor(.darkGreenFont)
@@ -237,12 +235,10 @@ struct iPadScoutingFormView: View {
             "Driving Score": Int(drivingScore)
         ]
         
-        // Add optional comments only if provided
         if !comments.isEmpty {
             formData["Comments"] = comments
         }
 
-        // Update pin location if available
         if let pinLocation = pinLocation {
             let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2
             let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2
@@ -324,6 +320,6 @@ func descriptionForScore(_ score: Int) -> String {
 struct iPadScoutingFormView_Previews: PreviewProvider {
     static var previews: some View {
         iPadScoutingFormView(username: "PreviewUser")
-            .previewDevice("iPad Pro (12.9-inch) (6th generation)") // Specify the iPad model for the preview
+            .previewDevice("iPad Pro (12.9-inch) (6th generation)")
     }
 }
