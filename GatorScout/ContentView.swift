@@ -46,9 +46,25 @@ struct ScoutingFormView: View {
     @State private var matchNumber = ""
     @State private var isSubmitting = false
 
-    @State private var autoPoints = 0
-    @State private var teleopPoints = 0
-    @State private var endGamePoints = 0
+    @State private var leaveStartingLine = false
+    @State private var autoCoralL1 = 0
+    @State private var autoCoralL2 = 0
+    @State private var autoCoralL3 = 0
+    @State private var autoCoralL4 = 0
+    @State private var autoAlgaeRemoved = 0
+
+    @State private var teleopCoralL1 = 0
+    @State private var teleopCoralL2 = 0
+    @State private var teleopCoralL3 = 0
+    @State private var teleopCoralL4 = 0
+    @State private var teleopAlgaeRemoved = 0
+    @State private var algaeScoredNet = 0
+    @State private var algaeScoredProcessor = 0
+
+    @State private var didDeepCage = false
+    @State private var didShallowCage = false
+    @State private var isParked = false
+
     @State private var comments = ""
 
     @State private var isOffense = false
@@ -101,130 +117,287 @@ struct ScoutingFormView: View {
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .padding(.vertical, 8)
-                            
-                            VStack {
-                                Text("Tap to mark the robot's starting position.")
-                                    .font(.subheadline)
-                                    .foregroundColor(.darkGreenFont)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.bottom, 5)
-
-                                GeometryReader { geometry in
-                                    ZStack {
-                                        Image("1700")
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: geometry.size.width, height: geometry.size.height)
-                                            .clipped()
-                                            .overlay(
-                                                allianceColor == "Red"
-                                                    ? Image("1700")
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .frame(width: geometry.size.width * 2, height: geometry.size.height)
-                                                        .offset(x: geometry.size.width / 2, y: 0)
-                                                    : Image("1700")
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .frame(width: geometry.size.width * 2, height: geometry.size.height)
-                                                        .offset(x: -geometry.size.width / 2, y: 0)
-                                            )
-                                            .gesture(
-                                                DragGesture(minimumDistance: 0)
-                                                    .onEnded { value in
-                                                        let location = value.location
-                                                        if location.x >= 0 && location.x <= geometry.size.width &&
-                                                            location.y >= 0 && location.y <= geometry.size.height {
-                                                            pinLocation = location
-                                                            imageSize = geometry.size
-                                                        }
-                                                    }
-                                            )
-                                            .overlay(
-                                                pinLocation.map { location in
-                                                    Circle()
-                                                        .fill(Color.greenTheme2)
-                                                        .frame(width: 20, height: 20)
-                                                        .position(location)
-                                                }
-                                            )
-                                    }
-                                }
-                                .frame(height: 300)
-                            }
-                            .padding()
-
                         }
-
-
+                        
+                        Section(header: Text("Auto").foregroundColor(.darkGreenFont)) {
+                            Toggle("Robot left starting line?", isOn: $leaveStartingLine)
+                                .foregroundColor(.darkGreenFont)
+                                .font(.headline)
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Auto coral scored in level 1 (trough):")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Auto Points", selection: $autoCoralL1) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Auto coral scored in level 2:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Auto Points", selection: $autoCoralL2) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Auto coral scored in level 3:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Auto Points", selection: $autoCoralL3) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Auto coral scored in level 4:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Auto Points", selection: $autoCoralL4) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Auto algae removed from reef:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Auto Points", selection: $autoAlgaeRemoved) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            
+                        }
+                        
+                        Section(header: Text("Teleop").foregroundColor(.darkGreenFont)) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Teleop coral scored in level 1 (trough):")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $teleopCoralL1) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Teleop coral scored in level 2:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $teleopCoralL2) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Teleop coral scored in level 3:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $teleopCoralL3) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Teleop coral scored in level 4:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $teleopCoralL4) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Teleop algae removed from reef:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $teleopAlgaeRemoved) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Algae scored into net:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $algaeScoredNet) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack {
+                                    Text("Algae scored into processor:")
+                                        .font(.headline)
+                                        .foregroundColor(.darkGreenFont)
+                                        .padding(.trailing, 8)
+                                    Spacer()
+                                    Picker("Teleop Points", selection: $algaeScoredProcessor) {
+                                        ForEach(0..<31) { number in
+                                            Text("\(number)").tag(number)
+                                        }
+                                    }
+                                    .pickerStyle(WheelPickerStyle())
+                                    .frame(width: 100, height: 120)
+                                    .clipped()
+                                    .background(Color.white.opacity(0.8))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.darkGreenFont)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                        }
+                        
+                        Section(header: Text("Endgame").foregroundColor(.darkGreenFont)) {
+                            Toggle("Robot is parked?", isOn: $isParked)
+                                .foregroundColor(.darkGreenFont)
+                                .font(.headline)
+                            Toggle("Is robot successfully hanging from shallow cage?", isOn: $didShallowCage)
+                                .foregroundColor(.darkGreenFont)
+                                .font(.headline)
+                            Toggle("Is robot successfully hanging from deep cage?", isOn: $didDeepCage)
+                                .foregroundColor(.darkGreenFont)
+                                .font(.headline)
+                        }
+                        
                         Section(header: Text("Performance").foregroundColor(.darkGreenFont)) {
-                            VStack(alignment: .leading, spacing: 16) {
-                                HStack {
-                                    Text("Auto Points:")
-                                        .font(.headline)
-                                        .foregroundColor(.darkGreenFont)
-                                        .padding(.trailing, 8)
-                                    Spacer()
-                                    Picker("Auto Points", selection: $autoPoints) {
-                                        ForEach(0..<31) { number in
-                                            Text("\(number)").tag(number)
-                                        }
-                                    }
-                                    .pickerStyle(WheelPickerStyle())
-                                    .frame(width: 100, height: 120)
-                                    .clipped()
-                                    .background(Color.white.opacity(0.8))
-                                    .cornerRadius(8)
-                                    .foregroundColor(.darkGreenFont)
-                                }
-                                .padding(.vertical, 4)
-                            }
-
-
-                            VStack(alignment: .leading, spacing: 16) {
-                                HStack {
-                                    Text("Teleop Points:")
-                                        .font(.headline)
-                                        .foregroundColor(.darkGreenFont)
-                                        .padding(.trailing, 8)
-                                    Spacer()
-                                    Picker("Teleop Points", selection: $teleopPoints) {
-                                        ForEach(0..<31) { number in
-                                            Text("\(number)").tag(number)
-                                        }
-                                    }
-                                    .pickerStyle(WheelPickerStyle())
-                                    .frame(width: 100, height: 120)
-                                    .clipped()
-                                    .background(Color.white.opacity(0.8))
-                                    .cornerRadius(8)
-                                    .foregroundColor(.darkGreenFont)
-                                }
-                                .padding(.vertical, 4)
-                            }
-                                
-                               
-                            VStack(alignment: .leading, spacing: 16) {
-                                HStack {
-                                    Text("End Game Points:")
-                                        .font(.headline)
-                                        .foregroundColor(.darkGreenFont)
-                                        .padding(.trailing, 8)
-                                    Spacer()
-                                    Picker("End Game Points", selection: $endGamePoints) {
-                                        ForEach(0..<31) { number in
-                                            Text("\(number)").tag(number)
-                                        }
-                                    }
-                                    .pickerStyle(WheelPickerStyle())
-                                    .frame(width: 100, height: 120)
-                                    .clipped()
-                                    .background(Color.white.opacity(0.8))
-                                    .cornerRadius(8)
-                                    .foregroundColor(.darkGreenFont)
-                                }
-                                .padding(.vertical, 4)
-                            }
 
                             Toggle("Offense", isOn: $isOffense)
                                 .foregroundColor(.darkGreenFont)
@@ -239,7 +412,7 @@ struct ScoutingFormView: View {
                                     .foregroundColor(.darkGreenFont)
                                     .padding(.bottom, 4)
 
-                                Slider(value: $drivingScore, in: 1...10, step: 1)
+                                Slider(value: $drivingScore, in: 0...10, step: 1)
                                     .accentColor(.greenTheme2)
                                     .padding(.bottom, 4)
 
@@ -315,7 +488,7 @@ struct ScoutingFormView: View {
             return
         }
     
-        guard drivingScore > 0 else {
+        guard drivingScore > -1 else {
             alertMessage = "Driving Score must be selected."
             showErrorAlert = true
             return
@@ -323,18 +496,32 @@ struct ScoutingFormView: View {
         
         isSubmitting = true
 
-        let normalizedPinLocation: [String: CGFloat]? = pinLocation.map {
-            ["x": $0.x / imageSize.width, "y": $0.y / imageSize.height]
-        }
 
         var formData: [String: Any] = [
             "Username": username,
             "Team Number": teamNumber,
             "Match Number": matchNumber,
             "Alliance": allianceColor,
-            "Auto Points": autoPoints,
-            "Teleop Points": teleopPoints,
-            "End Game Points": endGamePoints,
+            
+            "Left starting line": leaveStartingLine ? "Yes" : "No",
+            "Auto Coral L1": autoCoralL1,
+            "Auto Coral L2": autoCoralL2,
+            "Auto Coral L3": autoCoralL3,
+            "Auto Coral L4": autoCoralL4,
+            "Auto Algae Removed": autoAlgaeRemoved,
+            
+            "Teleop Coral L1": teleopCoralL1,
+            "Teleop Coral L2": teleopCoralL2,
+            "Teleop Coral L3": teleopCoralL3,
+            "Teleop Coral L4": teleopCoralL4,
+            "Teleop Algae Removed": teleopAlgaeRemoved,
+            "Algae Scored Net": algaeScoredNet,
+            "Algae Scored Processor": algaeScoredProcessor,
+            
+            "Robot parked": isParked  ? "Yes" : "No",
+            "Shallow Cage": didShallowCage ? "Yes" : "No",
+            "Deep cage": didDeepCage  ? "Yes" : "No",
+
             "Offense": isOffense ? "Yes" : "No",
             "Defense": isDefense ? "Yes" : "No",
             "Driving Score": Int(drivingScore)
@@ -344,13 +531,6 @@ struct ScoutingFormView: View {
             formData["Comments"] = comments
         }
 
-        if let pinLocation = pinLocation {
-            let normalizedX = ((pinLocation.x / imageSize.width) - 0.5) * 2
-            let normalizedY = ((1 - (pinLocation.y / imageSize.height)) - 0.5) * 2
-            let fieldX = normalizedX * 917 / 2
-            let fieldY = normalizedY * 466 / 2
-            formData["Field Coordinates"] = ["x": fieldX, "y": fieldY]
-        }
 
         let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbztu6xHmQ1hhbqcQjCCVCL2zrS9Sc-tYPH17alxR8uw7Zbm_kEvxwGpMqgExJxRIm9pZg/exec")!
         var request = URLRequest(url: endpointURL)
@@ -389,13 +569,33 @@ struct ScoutingFormView: View {
         }
         task.resume()
     }
+    
+
 
     func clearFields() {
         teamNumber = ""
         matchNumber = ""
-        autoPoints = 0
-        teleopPoints = 0
-        endGamePoints = 0
+        //Auto
+        leaveStartingLine = false
+        autoCoralL1 = 0
+        autoCoralL2 = 0
+        autoCoralL3 = 0
+        autoCoralL4 = 0
+        autoAlgaeRemoved = 0
+        
+        teleopCoralL1 = 0
+        teleopCoralL2 = 0
+        teleopCoralL3 = 0
+        teleopCoralL4 = 0
+        teleopAlgaeRemoved = 0
+        algaeScoredNet = 0
+        algaeScoredProcessor = 0
+        
+        isParked = false
+        didShallowCage = false
+        didDeepCage = false
+
+        
         comments = ""
         isOffense = false
         isDefense = false
@@ -405,6 +605,7 @@ struct ScoutingFormView: View {
     }
     func descriptionForScore(_ score: Int) -> String {
         switch score {
+        case 0: return "0 = No driving at all"
         case 1: return "1 = Poor driving performance"
         case 2: return "2 = Below average driving"
         case 3: return "3 = Somewhat effective driving"
