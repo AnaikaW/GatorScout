@@ -1,44 +1,6 @@
 import SwiftUI
 import Foundation
 
-extension UIApplication {
-    func endEditing() {
-        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int = UInt64()
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3:
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-}
-
-extension Color {
-    static let greenTheme1 = Color(hex: "#9beba4")
-    static let greenTheme2 = Color(hex: "#32a840")
-    static let darkGreenFont = Color(hex: "#006400")
-}
-
 struct ScoutingFormView: View {
     let username: String
 
@@ -75,13 +37,12 @@ struct ScoutingFormView: View {
     // Alliance selection
     @State private var allianceColor = "Red"
 
-    // State for pin location
-    @State private var pinLocation: CGPoint? = nil
-    @State private var imageSize: CGSize = .zero
-
     @State private var showErrorAlert = false
     @State private var showSuccessAlert = false
     @State private var alertMessage = ""
+    
+    @State private var savedForms: [[String: Any]] = []
+
 
     var body: some View {
         NavigationView {
@@ -481,35 +442,32 @@ struct ScoutingFormView: View {
             showErrorAlert = true
             return
         }
-        
+
         guard !matchNumber.isEmpty else {
             alertMessage = "Match Number is required."
             showErrorAlert = true
             return
         }
-    
+
         guard drivingScore > -1 else {
             alertMessage = "Driving Score must be selected."
             showErrorAlert = true
             return
         }
-        
-        isSubmitting = true
 
+        isSubmitting = true
 
         var formData: [String: Any] = [
             "Username": username,
             "Team Number": teamNumber,
             "Match Number": matchNumber,
             "Alliance": allianceColor,
-            
             "Left starting line": leaveStartingLine ? "Yes" : "No",
             "Auto Coral L1": autoCoralL1,
             "Auto Coral L2": autoCoralL2,
             "Auto Coral L3": autoCoralL3,
             "Auto Coral L4": autoCoralL4,
             "Auto Algae Removed": autoAlgaeRemoved,
-            
             "Teleop Coral L1": teleopCoralL1,
             "Teleop Coral L2": teleopCoralL2,
             "Teleop Coral L3": teleopCoralL3,
@@ -517,58 +475,68 @@ struct ScoutingFormView: View {
             "Teleop Algae Removed": teleopAlgaeRemoved,
             "Algae Scored Net": algaeScoredNet,
             "Algae Scored Processor": algaeScoredProcessor,
-            
-            "Robot parked": isParked  ? "Yes" : "No",
+            "Robot parked": isParked ? "Yes" : "No",
             "Shallow Cage": didShallowCage ? "Yes" : "No",
-            "Deep cage": didDeepCage  ? "Yes" : "No",
-
+            "Deep cage": didDeepCage ? "Yes" : "No",
             "Offense": isOffense ? "Yes" : "No",
             "Defense": isDefense ? "Yes" : "No",
             "Driving Score": Int(drivingScore)
         ]
-        
+
         if !comments.isEmpty {
             formData["Comments"] = comments
         }
 
+        // Call FormSubmissionManager to handle online/offline submission
+        FormSubmissionManager.shared.submitData(formData)
 
-        let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbztu6xHmQ1hhbqcQjCCVCL2zrS9Sc-tYPH17alxR8uw7Zbm_kEvxwGpMqgExJxRIm9pZg/exec")!
-        var request = URLRequest(url: endpointURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: formData, options: [])
-            request.httpBody = jsonData
-        } catch {
-            alertMessage = "Unable to encode data."
-            showErrorAlert = true
-            isSubmitting = false
-            return
-        }
-
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                isSubmitting = false
-
-                if let error = error {
-                    alertMessage = "Error: \(error.localizedDescription)"
-                    showErrorAlert = true
-                    return
-                }
-
-                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                    alertMessage = "Failed to submit data."
-                    showErrorAlert = true
-                    return
-                }
-
-                alertMessage = "Data submitted successfully!"
-                showSuccessAlert = true
+        isSubmitting = false
+        alertMessage = "Data queued for submission."
+        showSuccessAlert = true
+    }
+    
+        func saveFormDataLocally(_ formData: [String: Any]) {
+            if var existingForms = UserDefaults.standard.array(forKey: "savedForms") as? [[String: Any]] {
+                existingForms.append(formData)
+                UserDefaults.standard.set(existingForms, forKey: "savedForms")
+            } else {
+                UserDefaults.standard.set([formData], forKey: "savedForms")
             }
         }
-        task.resume()
-    }
+
+        func loadSavedForms() {
+            if let savedForms = UserDefaults.standard.array(forKey: "savedForms") as? [[String: Any]] {
+                self.savedForms = savedForms
+            }
+        }
+
+        func submitSavedForm(formData: [String: Any], index: Int) {
+            let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbztu6xHmQ1hhbqcQjCCVCL2zrS9Sc-tYPH17alxR8uw7Zbm_kEvxwGpMqgExJxRIm9pZg/exec")!
+            var request = URLRequest(url: endpointURL)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: formData, options: [])
+                request.httpBody = jsonData
+            } catch {
+                print("Error encoding saved data.")
+                return
+            }
+
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                DispatchQueue.main.async {
+                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                        self.savedForms.remove(at: index)
+                        UserDefaults.standard.set(self.savedForms, forKey: "savedForms")
+                    } else {
+                        print("resubmit failed for one form")
+                    }
+                }
+            }
+            task.resume()
+        }
+
     
 
 
@@ -600,7 +568,6 @@ struct ScoutingFormView: View {
         isOffense = false
         isDefense = false
         drivingScore = 0.0
-        pinLocation = nil
         allianceColor = "Red"
     }
     func descriptionForScore(_ score: Int) -> String {
