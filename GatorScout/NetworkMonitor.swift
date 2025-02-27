@@ -13,14 +13,18 @@ class NetworkMonitor: ObservableObject {
     private var monitor: NWPathMonitor
     private var queue = DispatchQueue.global(qos: .background)
 
-    @Published var isConnected: Bool = true
+    @Published var isConnected: Bool = false
 
     private init() {
         monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             DispatchQueue.main.async {
+                let wasOffline = !self.isConnected
                 self.isConnected = path.status == .satisfied
-                if self.isConnected {
+
+                // If we were offline and now we're online, trigger resubmission
+                if wasOffline && self.isConnected {
+                    print("Network restored! Resubmitting saved forms...")
                     FormSubmissionManager.shared.resubmitSavedForms()
                 }
             }
