@@ -494,51 +494,6 @@ struct ScoutingFormView: View {
         alertMessage = "Data queued for submission."
         showSuccessAlert = true
     }
-    
-        func saveFormDataLocally(_ formData: [String: Any]) {
-            if var existingForms = UserDefaults.standard.array(forKey: "savedForms") as? [[String: Any]] {
-                existingForms.append(formData)
-                UserDefaults.standard.set(existingForms, forKey: "savedForms")
-            } else {
-                UserDefaults.standard.set([formData], forKey: "savedForms")
-            }
-        }
-
-        func loadSavedForms() {
-            if let savedForms = UserDefaults.standard.array(forKey: "savedForms") as? [[String: Any]] {
-                self.savedForms = savedForms
-            }
-        }
-
-        func submitSavedForm(formData: [String: Any], index: Int) {
-            let endpointURL = URL(string: "https://script.google.com/macros/s/AKfycbztu6xHmQ1hhbqcQjCCVCL2zrS9Sc-tYPH17alxR8uw7Zbm_kEvxwGpMqgExJxRIm9pZg/exec")!
-            var request = URLRequest(url: endpointURL)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-            do {
-                let jsonData = try JSONSerialization.data(withJSONObject: formData, options: [])
-                request.httpBody = jsonData
-            } catch {
-                print("Error encoding saved data.")
-                return
-            }
-
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                DispatchQueue.main.async {
-                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                        self.savedForms.remove(at: index)
-                        UserDefaults.standard.set(self.savedForms, forKey: "savedForms")
-                    } else {
-                        print("resubmit failed for one form")
-                    }
-                }
-            }
-            task.resume()
-        }
-
-    
-
 
     func clearFields() {
         teamNumber = ""
@@ -570,6 +525,7 @@ struct ScoutingFormView: View {
         drivingScore = 0.0
         allianceColor = "Red"
     }
+    
     func descriptionForScore(_ score: Int) -> String {
         switch score {
         case 0: return "0 = No driving at all"
