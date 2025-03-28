@@ -4,7 +4,7 @@ import Foundation
 struct ScoutingFormView: View {
     let username: String
 
-    @State private var teamNumber = ""
+    //@State private var teamNumber = ""
     @State private var matchNumber = ""
     @State private var isSubmitting = false
 
@@ -43,7 +43,11 @@ struct ScoutingFormView: View {
     
     @State private var savedForms: [[String: Any]] = []
 
+    @StateObject private var viewModel = TeamsViewModel()
+    @State private var selectedTeamNumber = "" 
+    @State private var counter: Int = 0
 
+        
     var body: some View {
         NavigationView {
             
@@ -53,15 +57,35 @@ struct ScoutingFormView: View {
                                     .onTapGesture {
                                         UIApplication.shared.endEditing()
                                     }
+                
+               
+                
                 VStack {
                     Form {
                         Section(header: Text("Match Information").foregroundColor(.darkGreenFont)) {
-                            TextField("Team Number", text: $teamNumber)
+                        VStack {
+                            if viewModel.teams.isEmpty {
+                                ProgressView("Loading teams...")
+                            } else {
+                                Picker("Select Team Number", selection: $selectedTeamNumber) {
+                                    ForEach(viewModel.teams) { team in
+                                        Text("\(team.teamNumber)").tag(team.teamNumber)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                            }
+                        }
+                        .onAppear {
+                            print("View appeared!") // Debugging
+                            viewModel.fetchTeams()
+                        }
+                        
+                            /*TextField("Team Number", text: $teamNumber)
                                 .keyboardType(.numberPad)
                                 .padding()
                                 .background(Color.white.opacity(0.8))
                                 .cornerRadius(8)
-                                .foregroundColor(.darkGreenFont)
+                                .foregroundColor(.darkGreenFont)*/
 
                             TextField("Match Number", text: $matchNumber)
                                 .keyboardType(.numberPad)
@@ -437,7 +461,7 @@ struct ScoutingFormView: View {
     }
 
     func submitData() {
-        guard !teamNumber.isEmpty else {
+        guard !selectedTeamNumber.isEmpty else {
             alertMessage = "Team Number is required."
             showErrorAlert = true
             return
@@ -459,7 +483,7 @@ struct ScoutingFormView: View {
 
         var formData: [String: Any] = [
             "Username": username,
-            "Team Number": teamNumber,
+            "Team Number": selectedTeamNumber,
             "Match Number": matchNumber,
             "Alliance": allianceColor,
             "Left starting line": leaveStartingLine ? "Yes" : "No",
@@ -496,7 +520,7 @@ struct ScoutingFormView: View {
     }
 
     func clearFields() {
-        teamNumber = ""
+        selectedTeamNumber = ""
         matchNumber = ""
         //Auto
         leaveStartingLine = false
