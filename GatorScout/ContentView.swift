@@ -44,8 +44,8 @@ struct ScoutingFormView: View {
     @State private var savedForms: [[String: Any]] = []
 
     @StateObject private var viewModel = TeamsViewModel()
-    @State private var selectedTeamNumber = "" 
-    @State private var counter: Int = 0
+    @State private var selectedTeamNumber = ""
+    @State private var selectedTeamIndex: Int?
 
         
     var body: some View {
@@ -67,12 +67,18 @@ struct ScoutingFormView: View {
                             if viewModel.teams.isEmpty {
                                 ProgressView("Loading teams...")
                             } else {
-                                Picker("Select Team Number", selection: $selectedTeamNumber) {
-                                    ForEach(viewModel.teams) { team in
-                                        Text("\(team.teamNumber)").tag(team.teamNumber)
+                                Picker("Select Team Number", selection: $selectedTeamIndex) {
+                                    ForEach(viewModel.teams.indices, id: \.self) { index in
+                                        let team = viewModel.teams[index]
+                                        Text("\(team.teamNumber)").tag(index) // Use index as tag
                                     }
                                 }
                                 .pickerStyle(MenuPickerStyle())
+                                .onChange(of: selectedTeamIndex) { newIndex in
+                                    if let newIndex = newIndex {
+                                        selectedTeamNumber = String(viewModel.teams[newIndex].teamNumber)
+                                    }
+                                }
                             }
                         }
                         .onAppear {
